@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PATIENT
+  HOSPITAL_ADMIN
+  DOCTOR
+  CAREGIVER
+  FAMILY_MEMBER
+  SUPER_ADMIN
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  phoneNumber   String?  @unique
+  passwordHash  String
+  role          Role     @default(PATIENT)
+  isMfaEnabled  Boolean  @default(false)
+  mfaSecret     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  profile          Profile?
+  doctorProfile    Doctor?
+  managedHospital  Hospital? @relation("HospitalAdmins")
+  appointments     Appointment[] @relation("PatientAppointments")
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  firstName String
+  lastName  String
+  dob       DateTime?
+  gender    String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Hospital {
+  id          String   @id @default(uuid())
+  name        String
+  adminId     String   @unique
+  address     String?
+  city        String?
+  latitude    Float?
+  longitude   Float?
+  rating      Float    @default(0.0)
+  services    String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  admin       User     @relation("HospitalAdmins", fields: [adminId], references: [id])
+  doctors     Doctor[]
+  appointments Appointment[]
+}
+
+model Doctor {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  hospitalId  String
+  specialty   String
+  experience  Int      @default(0) // years
+  rating      Float    @default(0.0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hospital    Hospital @relation(fields: [hospitalId], references: [id])
+  appointments Appointment[] @relation("DoctorAppointments")
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model Appointment {
+  id          String   @id @default(uuid())
+  patientId   String
+  doctorId    String
+  hospitalId  String
+  date        DateTime
+  status      AppointmentStatus @default(PENDING)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  patient     User     @relation("PatientAppointments", fields: [patientId], references: [id])
+  doctor      Doctor   @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  hospital    Hospital @relation(fields: [hospitalId], references: [id])
+}
