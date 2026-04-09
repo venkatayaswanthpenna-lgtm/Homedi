@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "name": "homedi-web",
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "env": {
+    "NEXT_PRIVATE_SKIP_PATCHES": "1"
+  }
+}
