@@ -2,15 +2,27 @@ import Link from 'next/link';
 import AppLayout from '@/components/AppLayout';
 import { Settings, ArrowLeft, User, Bell, Shield, Moon, Globe } from 'lucide-react';
 
-const sections = [
+interface SettingItem {
+  label: string;
+  value: string;
+  toggle?: boolean;
+}
+
+interface SettingSection {
+  title: string;
+  icon: any;
+  items: SettingItem[];
+}
+
+const sections: SettingSection[] = [
   {
     title: 'Account',
     icon: User,
     items: [
-      { label: 'Full Name', value: 'John Doe' },
-      { label: 'Email', value: 'john.doe@example.com' },
-      { label: 'Phone', value: '+91 98765 43210' },
-      { label: 'Date of Birth', value: 'Jan 15, 1992' },
+      { label: 'Full Name', value: 'John Doe', toggle: false },
+      { label: 'Email', value: 'john.doe@example.com', toggle: false },
+      { label: 'Phone', value: '+91 98765 43210', toggle: false },
+      { label: 'Date of Birth', value: 'Jan 15, 1992', toggle: false },
     ],
   },
   {

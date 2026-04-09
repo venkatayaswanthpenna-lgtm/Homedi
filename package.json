@@ -2,6 +2,7 @@
   "name": "homedi-workspace",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "npm@11.11.1",
   "workspaces": [
     "apps/*",
     "packages/*"
